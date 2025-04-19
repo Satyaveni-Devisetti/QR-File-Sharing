@@ -113,6 +113,29 @@
       gap: 15px; 
       margin-top: 15px;
     }
+    .info-icon {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      font-size: 1.8rem;
+      cursor: pointer;
+    }
+    .description-box {
+      max-width: 850px;
+      background-color: #ecf0f1;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      color: #2c3e50;
+      display: none;
+    }
+    .description-box ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    .description-box li {
+      margin: 8px 0;
+    }
     .share-group {
       display: flex;
       gap: 20px; 
@@ -129,6 +152,16 @@
 <body>
 
   <h1 class="main-heading">QR FILE SHARING SYSTEM</h1>
+  <div class="info-icon" onclick="toggleDescription()">ℹ️</div>
+
+  <div class="description-box" id="descriptionBox">
+    <ul>
+      <li>📁 Upload any file from your device.</li>
+      <li>🔐 Optionally protect it with a password.</li>
+      <li>📷 Generate a secure QR code linked to the file.</li>
+      <li>📱 Scan QR to access and download the file.</li>
+    </ul>
+  </div>
 
   <div class="container">
     <div class="left">
@@ -169,6 +202,11 @@
     const cloudName = 'dmnyvpqhr';  // Replace with your Cloudinary cloud name
     const uploadPreset = 'qr_uploads';  // Replace with your preset
     const publicUrl = 'https://satyaveni-devisetti.github.io/QR-File-Sharing/'; 
+
+    function toggleDescription() {
+      descriptionBox.style.display =
+        descriptionBox.style.display === 'none' || descriptionBox.style.display === '' ? 'block' : 'none';
+    }
   
     let fileData = null;
   
