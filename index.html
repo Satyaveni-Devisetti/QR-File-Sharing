@@ -6,25 +6,14 @@
   <title>QR File Sharing System</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Roboto&display=swap" rel="stylesheet">
   <style>
-    /* Your original CSS remains unchanged */
-    /* ... (Keep your styles as they are) ... */
-    * {
-      box-sizing: border-box;
-      font-family: 'Roboto', sans-serif;
-    }
-
+    * { box-sizing: border-box; font-family: 'Roboto', sans-serif; }
     body {
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
+      margin: 0; padding: 20px;
+      display: flex; flex-direction: column;
       min-height: 100vh;
       background: #f4f6f9;
-      justify-content: flex-start;
       align-items: center;
-      padding: 20px;
     }
-
     h1.main-heading {
       font-family: 'Montserrat', sans-serif;
       font-size: 3rem;
@@ -34,58 +23,47 @@
       position: relative;
       animation: fadeIn 2s ease-in-out;
     }
-
     h1.main-heading::after {
       content: '';
-      width: 80px;
-      height: 4px;
+      width: 80px; height: 4px;
       background-color: #3498db;
       display: block;
       margin: 10px auto 0;
       border-radius: 2px;
     }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     .container {
-      display: flex;
-      flex-direction: row;
-      width: 95%;
-      max-width: 1100px;
+      display: flex; flex-direction: row;
+      width: 95%; max-width: 1100px;
       background: #ffffff;
       border-radius: 12px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      overflow: hidden;
-      flex-wrap: wrap;
+      overflow: hidden; flex-wrap: wrap;
     }
-
     .left, .right {
-      flex: 1;
-      min-width: 300px;
+      flex: 1; min-width: 300px;
       padding: 30px;
     }
-
     .left h2, .right h2 {
       color: #34495e;
       font-size: 1.5rem;
       margin-bottom: 15px;
     }
-
     input[type="file"], input[type="password"] {
       display: block;
       margin-bottom: 15px;
+      width: 100%;
+      padding: 8px;
     }
-
     .file-info {
       background-color: #ecf0f1;
       padding: 15px;
       border-radius: 8px;
       color: #2c3e50;
     }
-
     .qr-code {
       display: flex;
       justify-content: center;
@@ -95,22 +73,19 @@
       margin: auto;
       border: 2px dashed #bdc3c7;
       border-radius: 10px;
-      position: relative;
       background-color: #f9f9f9;
+      position: relative;
     }
-
     .loading {
       position: absolute;
       animation: blink 1s infinite;
       color: #7f8c8d;
       font-size: 16px;
     }
-
     @keyframes blink {
       0%, 100% { opacity: 0; }
       50% { opacity: 1; }
     }
-
     button {
       padding: 10px 20px;
       border: none;
@@ -121,31 +96,17 @@
       margin-top: 15px;
       transition: background 0.3s;
     }
-
-    button:hover {
-      background-color: #2471a3;
-    }
-
+    button:hover { background-color: #2471a3; }
     .file-link {
       text-decoration: underline;
       color: #2980b9;
       cursor: pointer;
-      display: inline-block;
       margin-top: 8px;
     }
-
-    .hidden {
-      display: none;
-    }
-
+    .hidden { display: none; }
     @media (max-width: 768px) {
-      .container {
-        flex-direction: column;
-      }
-
-      h1.main-heading {
-        font-size: 2.2rem;
-      }
+      .container { flex-direction: column; }
+      h1.main-heading { font-size: 2.2rem; }
     }
   </style>
 </head>
@@ -173,6 +134,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <script src="https://unpkg.com/cloudinary-core/cloudinary-core-shrinkwrap.min.js"></script>
   <script>
     const fileInput = document.getElementById('fileInput');
     const fileInfo = document.getElementById('fileInfo');
@@ -182,62 +144,67 @@
     const shareButton = document.getElementById('shareButton');
     const passwordInput = document.getElementById('passwordInput');
   
-    const cloudName = 'dmnyvpqhr';
-    const uploadPreset = 'qr_uploads';
+    const cloudName = 'dmnyvpqhr';  // Replace with your Cloudinary cloud name
+    const uploadPreset = 'qr_uploads';  // Replace with your preset
+    const publicUrl = 'https://satyaveni-devisetti.github.io/QR-File-Sharing/'; // Your GitHub Pages URL
   
     fileInput.addEventListener('change', async () => {
       const password = passwordInput.value.trim();
       const file = fileInput.files[0];
-      if (!file) return;
   
-      fileInfo.innerHTML = `
-        <p><strong>File Name:</strong> ${file.name}</p>
-        <p><strong>Type:</strong> ${file.type || 'Unknown'}</p>
-      `;
+      if (file) {
+        fileInfo.innerHTML = `
+          <p><strong>File Name:</strong> ${file.name}</p>
+          <p><strong>Type:</strong> ${file.type || 'Unknown'}</p>
+        `;
   
-      loadingText.textContent = "Uploading file to Cloudinary...";
-      loadingText.classList.remove('hidden');
+        loadingText.textContent = "Uploading file to Cloudinary...";
+        loadingText.classList.remove('hidden');
   
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', uploadPreset);
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', uploadPreset);
   
-      try {
-        const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, {
-          method: 'POST',
-          body: formData
-        });
+        try {
+          const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, {
+            method: 'POST',
+            body: formData
+          });
+          const data = await response.json();
+          const fileUrl = data.secure_url;
   
-        const data = await response.json();
-        const fileUrl = data.secure_url;
+          let qrLink = '';
   
-        let finalLink;
-        if (password) {
-          const qrData = { fileUrl, password };
-          const encodedData = encodeURIComponent(JSON.stringify(qrData));
-          finalLink = `${window.location.origin}/password-verification.html?data=${encodedData}`;
-        } else {
-          finalLink = fileUrl;
-        }
-  
-        QRCode.toCanvas(document.createElement("canvas"), finalLink, function (error, canvas) {
-          if (error) return console.error(error);
-          qrContainer.innerHTML = '';
-          canvas.style.width = '100%';
-          canvas.style.height = '100%';
-          qrContainer.appendChild(canvas);
+          if (password) {
+            const fileData = { fileUrl, password };
+            qrLink = `${publicUrl}/password-verification.html?fileData=${encodeURIComponent(JSON.stringify(fileData))}`;
+          } else {
+            qrLink = fileUrl;
+          }
   
           loadingText.classList.add('hidden');
-          downloadButton.classList.remove('hidden');
-          shareButton.classList.remove('hidden');
   
-          downloadButton.onclick = () => downloadQRCode(canvas);
-          shareButton.onclick = () => shareQRCode(canvas);
-        });
+          // Generate QR Code with the new method
+          QRCode.toCanvas(document.createElement('canvas'), qrLink, function (error, canvas) {
+            if (error) console.error(error);
+            qrContainer.innerHTML = '';
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            qrContainer.appendChild(canvas);
   
-      } catch (err) {
-        console.error("Upload failed:", err);
-        loadingText.textContent = "Upload failed!";
+            downloadButton.classList.remove('hidden');
+            shareButton.classList.remove('hidden');
+  
+            downloadButton.onclick = () => downloadQRCode(canvas);
+            shareButton.onclick = () => shareQRCode(canvas);
+  
+            qrContainer.onclick = () => window.location.href = qrLink;
+          });
+  
+        } catch (error) {
+          console.error('Error uploading to Cloudinary:', error);
+          loadingText.textContent = 'Upload failed. Please try again.';
+        }
       }
     });
   
@@ -256,21 +223,19 @@
     function shareQRCode(canvas) {
       const dataURL = canvas.toDataURL('image/png');
       if (navigator.share) {
-        fetch(dataURL)
-          .then(res => res.blob())
-          .then(blob => {
-            const file = new File([blob], "QRCode.png", { type: 'image/png' });
-            navigator.share({
-              title: 'QR Code',
-              files: [file],
-            });
-          })
-          .catch(console.error);
+        canvas.toBlob(blob => {
+          const file = new File([blob], 'QRCode.png', { type: 'image/png' });
+          navigator.share({
+            title: 'QR Code',
+            text: 'Check out this QR code!',
+            files: [file]
+          }).catch(console.error);
+        });
       } else {
         alert("Sharing not supported on this browser.");
       }
     }
   </script>
-  
+
 </body>
 </html>
